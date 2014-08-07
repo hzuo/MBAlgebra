@@ -2,8 +2,6 @@
 
 A programmatic manifestation of the mathematical concepts presented in Mac Lane & Birkhoff 1967.
 
-Beauty is emphasized.
-
 ## Excerpts
 
 ### Peano Naturals
@@ -12,10 +10,21 @@ Beauty is emphasized.
 scala> import hzuo.mbalgebra.nat._
 import hzuo.mbalgebra.nat._
 
-scala> val specs = new Specs(rep)
-specs: hzuo.mbalgebra.nat.Specs = Prop
+scala> val specs1 = new Specs(rep1)
+specs1: hzuo.mbalgebra.nat.Specs = Prop
 
-scala> specs.check
+scala> specs1.check
++ Nat.Peano1: OK, passed 100 tests.
++ Nat.Peano2: OK, passed 100 tests.
++ Nat.Peano3: OK, passed 100 tests.
++ Nat.pred: OK, passed 100 tests.
++ Nat.add1=add2: OK, passed 100 tests.
++ Nat.multiply1=multiply2: OK, passed 100 tests.
+
+scala> val specs2 = new Specs(rep2)
+specs2: hzuo.mbalgebra.nat.Specs = Prop
+
+scala> specs2.check
 + Nat.Peano1: OK, passed 100 tests.
 + Nat.Peano2: OK, passed 100 tests.
 + Nat.Peano3: OK, passed 100 tests.
@@ -27,25 +36,23 @@ scala> specs.check
 ### Propositional Logic
 
 ```scala
-scala> import hzuo.mbalgebra.util.PropLogic._
+scala> import hzuo.mbalgebra.util.PropLogic._, scalaz._, Scalaz._
 import hzuo.mbalgebra.util.PropLogic._
-
-scala> val Some(lhs) = ui.from("x * y + !x * z + y * z")
-lhs: hzuo.mbalgebra.util.PropLogic.Formula = Or(Or(And(Variable('x),Variable('y)),And(Not(Variable('x)),Variable('z))),And(Variable('y),Variable('z)))
-
-scala> val Some(rhs) = ui.from("x * y + !x * z")
-rhs: hzuo.mbalgebra.util.PropLogic.Formula = Or(And(Variable('x),Variable('y)),And(Not(Variable('x)),Variable('z)))
-
-scala> ui.to(dnf(lhs).right.get)
-res0: scalaz.Scalaz.Id[String] = x * y * z + x * y * !z + !x * y * z + !x * !y * z
-
-scala> ui.to(dnf(rhs).right.get)
-res1: scalaz.Scalaz.Id[String] = x * y * z + x * y * !z + !x * y * z + !x * !y * z
-
-scala> import scalaz._, Scalaz._
 import scalaz._
 import Scalaz._
 
-scala> lhs === rhs
-res2: Boolean = true
+scala> val Some(consensusLHS) = ui.from("x * y + !x * z + y * z")
+consensusLHS: hzuo.mbalgebra.util.PropLogic.Formula = Or(Or(And(Variable('x),Variable('y)),And(Not(Variable('x)),Variable('z))),And(Variable('y),Variable('z)))
+
+scala> val Some(consensusRHS) = ui.from("x * y + !x * z")
+consensusRHS: hzuo.mbalgebra.util.PropLogic.Formula = Or(And(Variable('x),Variable('y)),And(Not(Variable('x)),Variable('z)))
+
+scala> consensusLHS === consensusRHS
+res0: Boolean = true
+
+scala> ui.to(dnf(consensusLHS).right.get)
+res1: scalaz.Scalaz.Id[String] = x * y * z + x * y * !z + !x * y * z + !x * !y * z
+
+scala> ui.to(dnf(consensusRHS).right.get)
+res2: scalaz.Scalaz.Id[String] = x * y * z + x * y * !z + !x * y * z + !x * !y * z
 ```
