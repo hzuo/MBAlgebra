@@ -9,45 +9,71 @@ class Specs(nat0: Nat) extends Properties("Nat") {
 
   val ops = new Ops(nat0)
   import ops._
+  import nat._
 
-  implicit val arbNat: Arbitrary[nat.T] = {
+  implicit val arbNat: Arbitrary[T] = {
     // http://en.wikipedia.org/wiki/Recursive_data_type#Theory
-    def listToNat[X](xs: List[X]): nat.T = xs.foldLeft(nat.zero)((n, x) => nat.succ(n))
+    def listToNat[X](xs: List[X]): T = xs.foldLeft(zero)((n, x) => succ(n))
     def genNat = arbitrary[List[Unit]].map(listToNat)
     Arbitrary(genNat)
   }
 
-  property("Peano1") = forAll { (n: nat.T) =>
-    import nat._
-    nat.succ(n) =/= nat.zero
+  property("Peano1") = forAll { (n: T) =>
+    succ(n) =/= zero
   }
 
-  property("Peano2") = forAll { (a: nat.T, b: nat.T) =>
-    import nat._
-    (a =/= b) ==> (nat.succ(a) =/= nat.succ(b))
+  property("Peano2") = forAll { (a: T, b: T) =>
+    (a =/= b) ==> (succ(a) =/= succ(b))
   }
 
-  property("Peano3") = forAll { (ns: Set[nat.T]) =>
+  property("Peano3") = forAll { (ns: Set[T]) =>
     // we cannot actually check the induction axiom in finite time
-    // so this is our best attempt
-    ns.contains(nat.zero) ==> ns.exists(n => !ns.contains(nat.succ(n)))
-    // TODO: is there a finite set that satisfies Peano's axioms?
+    // the following is our best attempt
+    // since no finite set should satisfy the Peano axioms
+    ns.contains(zero) ==> ns.exists(n => !ns.contains(succ(n)))
   }
 
-  property("pred") = forAll { (n: nat.T) =>
-    import nat._
+  property("pred") = forAll { (n: T) =>
     pred(succ(n)) match {
-      case None => n === nat.zero
+      case None => n === zero
       case Some(pred) => n === pred
     }
   }
 
-  property("add1=add2") = forAll { (a: nat.T, b: nat.T) =>
-    add1(a, b) == add2(a, b)
+  property("add1=add2") = forAll { (a: T, b: T) =>
+    add1(a, b) === add2(a, b)
   }
 
-  property("multiply1=multiply2") = forAll { (a: nat.T, b: nat.T) =>
-    multiply1(a, b) == multiply2(a, b)
+  property("multiply1=multiply2") = forAll { (a: T, b: T) =>
+    multiply1(a, b) === multiply2(a, b)
+  }
+
+  // TODO: make tail-recursive
+  // if not possible: http://blog.higher-order.com/assets/trampolines.pdf
+  // TODO: http://en.wikipedia.org/wiki/Exponentiation_by_squaring
+
+  property("(k^(m+n))=(k^m)*(k^n)") = forAll { (k: T, m: T, n: T) =>
+    try {
+      pow(k, add(m, n)) === multiply(pow(k, m), pow(k, n))
+    } catch {
+      case _: StackOverflowError => true
+    }
+  }
+
+  property("k^(m*n)=(k^m)^n") = forAll { (k: T, m: T, n: T) =>
+    try {
+      pow(k, multiply(m, n)) === pow(pow(k, m), n)
+    } catch {
+      case _: StackOverflowError => true
+    }
+  }
+
+  property("(k^n)*(m^n)=(k*m)^n") = forAll { (k: T, m: T, n: T) =>
+    try {
+      multiply(pow(k, n), pow(m, n)) === pow(multiply(k, m), n)
+    } catch {
+      case _: StackOverflowError => true
+    }
   }
 
 }

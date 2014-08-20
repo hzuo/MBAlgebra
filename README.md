@@ -20,6 +20,9 @@ scala> specs1.check
 + Nat.pred: OK, passed 100 tests.
 + Nat.add1=add2: OK, passed 100 tests.
 + Nat.multiply1=multiply2: OK, passed 100 tests.
++ Nat.(k^(m+n))=(k^m)*(k^n): OK, passed 100 tests.
++ Nat.k^(m*n)=(k^m)^n: OK, passed 100 tests.
++ Nat.(k^n)*(m^n)=(k*m)^n: OK, passed 100 tests.
 
 scala> val specs2 = new Specs(rep2)
 specs2: hzuo.mbalgebra.nat.Specs = Prop
@@ -31,6 +34,9 @@ scala> specs2.check
 + Nat.pred: OK, passed 100 tests.
 + Nat.add1=add2: OK, passed 100 tests.
 + Nat.multiply1=multiply2: OK, passed 100 tests.
++ Nat.(k^(m+n))=(k^m)*(k^n): OK, passed 100 tests.
++ Nat.k^(m*n)=(k^m)^n: OK, passed 100 tests.
++ Nat.(k^n)*(m^n)=(k*m)^n: OK, passed 100 tests.
 ```
 
 ### Propositional Logic

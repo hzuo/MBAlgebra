@@ -31,4 +31,10 @@ class Ops(val nat: Nat) {
   // can we transform multiply into multiply1?
   // e.g. http://en.wikipedia.org/wiki/Bird%E2%80%93Meertens_Formalism
 
+  val pow: (nat.T, nat.T) => nat.T = {
+    def p(m: nat.T)(n: nat.T): nat.T = multiply(m, n)
+    val one = nat.succ(nat.zero)
+    (m: nat.T, n: nat.T) => iterate(p(m))(n)(one)
+  }
+
 }
